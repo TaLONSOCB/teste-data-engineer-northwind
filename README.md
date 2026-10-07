@@ -23,6 +23,8 @@ PostgreSQL (Northwind)  --Apache Hop-->  BRONZE (raw_)  --dbt-->  SILVER (stg_) 
 
 Escolhi o BigQuery como destino porque é o banco com que eu mais trabalho no dia a dia. Deixei as três camadas no mesmo conjunto de dados (`northwind_arruda`), separadas pelo prefixo das tabelas, do jeito que o enunciado descreve.
 
+![Tabelas das três camadas no BigQuery](docs/img/bigquery-tabelas.png)
+
 ## Como executar
 
 * Primeiro é preciso subir a origem. Eu usei o repositório indicado no teste:
@@ -65,10 +67,19 @@ Se for a primeira execução em um ambiente novo, pode aparecer um erro `NOT_FOU
 
 ### Camada Bronze (Apache Hop)
 * Em vez de fazer um pipeline para cada tabela, eu fiz um pipeline só (`bronze_load`) que recebe o nome da tabela pelo parâmetro `TABLE_NAME`. Ele lê `SELECT * FROM ${TABLE_NAME}` no PostgreSQL e grava em `raw_${TABLE_NAME}` no BigQuery. O `bronze_main` tem a lista das 4 tabelas e chama o `bronze_load` uma vez para cada. Se precisar incluir mais uma tabela, basta acrescentar uma linha nessa lista.
+
+![Lista de tabelas no Data grid do bronze_main](docs/img/hop-data-grid.png)
+
 * A Bronze é cópia fiel da origem, com as mesmas colunas e os mesmos nomes, sem nenhuma regra de negócio.
 * Antes de gravar, o pipeline faz um `TRUNCATE` na tabela de destino, assim eu posso rodar quantas vezes quiser sem duplicar os dados. Como a base é pequena (umas 3 mil linhas no total), optei por carga completa mesmo.
+
+![Pipeline bronze_load no Hop](docs/img/hop-bronze-load.png)
+
 * Para gravar no BigQuery eu precisei criar uma conexão do tipo genérico usando o driver da Simba, porque o Table output do Hop não aceita a conexão do tipo "Google BigQuery". Essa foi a parte que mais me deu trabalho, está detalhada no arquivo de erros.
 * A carga estava muito lenta no começo (3 minutos e meio para as 91 linhas de clientes), porque o driver mandava um insert por linha. Ativei a Storage Write API na URL da conexão e a mesma carga passou a levar 5 segundos. As 4 tabelas juntas levam uns 30 segundos.
+
+![Execução do bronze_main carregando as 4 tabelas](docs/img/hop-bronze-main.png)
+
 * As datas da tabela de pedidos ficaram como `DATETIME` na Bronze, porque esse modo de gravação não aceita o formato de data que o Hop envia em colunas `DATE`. É a única diferença de tipo em relação à origem, e eu converto para `DATE` na Silver.
 
 ### Camada Silver (dbt)
@@ -107,11 +118,16 @@ Antes de modelar eu rodei uma consulta de perfil em cima das tabelas da Bronze p
 
 ## Testes e documentação
 * No total são 86 testes e todos passam.
+
+![Resultado do dbt build](docs/img/dbt-build.png)
+
 * Usei os testes do próprio dbt: `not_null` e `unique` nas chaves, `relationships` entre as tabelas (inclusive da fato para as três dimensões) e `accepted_values` nas colunas que têm valores fixos.
 * Criei três testes genéricos, que ficam em `northwind/tests/generic`: `nao_negativo`, `entre_zero_e_um` (para o percentual de desconto) e `chave_composta_unica` (para garantir que não se repete pedido + produto).
 * Criei também quatro testes específicos em `northwind/tests`. O que eu acho mais importante é o `assert_ft_vendas_reconcilia_com_bronze`, que confere se a fato tem a mesma quantidade de linhas e o mesmo valor bruto total da Bronze, ou seja, se eu não perdi nem dupliquei nada nos joins. Os outros conferem a conta do valor líquido, se o calendário não tem dia faltando e se nenhum pedido foi enviado antes de ser feito.
 * Os testes das tabelas da Bronze rodam antes da transformação, para não transformar dado que chegou errado.
 * Todas as tabelas e colunas da Silver e da Gold têm descrição, nos arquivos `silver.yml` e `gold.yml`, e a documentação é gerada com `dbt docs generate`.
+
+![Grafo de dependências gerado pelo dbt docs](docs/img/dbt-docs-grafo.png)
 
 ## Erros que tive no caminho
 Eu costumo anotar os erros que aparecem enquanto estou desenvolvendo, até para lembrar depois do passo a passo que eu fiz. Estão todos no arquivo [docs/erros-e-solucoes.md](docs/erros-e-solucoes.md), com a mensagem, a causa e como resolvi. Os que mais mudaram o resultado final foram:
