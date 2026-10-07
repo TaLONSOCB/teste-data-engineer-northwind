@@ -1,0 +1,74 @@
+version: 2
+
+sources:
+  - name: bronze
+    description: >
+      Camada Bronze. Copia fiel das tabelas do Northwind (PostgreSQL), carregada
+      pelo Apache Hop sem regra de negocio. Os testes abaixo validam a ingestao
+      antes de qualquer transformacao.
+    database: rruda-data-test
+    schema: northwind_arruda
+    tables:
+      - name: raw_customers
+        description: Clientes, como na origem.
+        columns:
+          - name: customer_id
+            description: Identificador do cliente na origem.
+            data_tests:
+              - not_null
+              - unique
+
+      - name: raw_orders
+        description: >
+          Cabecalho dos pedidos, como na origem. As datas chegam como DATETIME
+          (limitacao da gravacao em lote do driver) e viram DATE na Silver.
+        columns:
+          - name: order_id
+            description: Identificador do pedido na origem.
+            data_tests:
+              - not_null
+              - unique
+          - name: customer_id
+            description: Cliente que fez o pedido.
+            data_tests:
+              - not_null
+              - relationships:
+                  to: source('bronze', 'raw_customers')
+                  field: customer_id
+          - name: order_date
+            description: Data do pedido.
+            data_tests:
+              - not_null
+
+      - name: raw_order_details
+        description: Itens dos pedidos, como na origem.
+        columns:
+          - name: order_id
+            description: Pedido ao qual o item pertence.
+            data_tests:
+              - not_null
+              - relationships:
+                  to: source('bronze', 'raw_orders')
+                  field: order_id
+          - name: product_id
+            description: Produto vendido no item.
+            data_tests:
+              - not_null
+              - relationships:
+                  to: source('bronze', 'raw_products')
+                  field: product_id
+
+      - name: raw_products
+        description: Produtos, como na origem.
+        columns:
+          - name: product_id
+            description: Identificador do produto na origem.
+            data_tests:
+              - not_null
+              - unique
+          - name: discontinued
+            description: Indicador de produto descontinuado (0 ou 1 na origem).
+            data_tests:
+              - accepted_values:
+                  values: [0, 1]
+                  quote: false

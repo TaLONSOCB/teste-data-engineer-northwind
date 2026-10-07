@@ -1,0 +1,21 @@
+# Credenciais - nunca versionar a chave da conta de servico
+rruda-data-test-*.json
+*keyfile*.json
+*service-account*.json
+.env
+
+# Ambiente Python
+.venv/
+__pycache__/
+
+# Artefatos do dbt
+target/
+dbt_packages/
+logs/
+.user.yml
+
+# Sistema
+.DS_Store
+
+# Sobras locais
+_pode_apagar/

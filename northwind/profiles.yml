@@ -1,0 +1,11 @@
+northwind:
+  target: dev
+  outputs:
+    dev:
+      type: bigquery
+      method: service-account
+      project: rruda-data-test
+      dataset: northwind_arruda
+      location: southamerica-east1
+      keyfile: "{{ env_var('DBT_KEYFILE') }}"
+      threads: 4

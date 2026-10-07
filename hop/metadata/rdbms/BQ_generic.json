@@ -1,0 +1,33 @@
+{
+  "virtualPath": "",
+  "rdbms": {
+    "GENERIC": {
+      "sshTunnelPort": "22",
+      "sshTunnelUsePrivateKey": false,
+      "pluginId": "GENERIC",
+      "sshTunnelEnabled": false,
+      "accessType": 0,
+      "sshTunnelUsername": "",
+      "password": "Encrypted ",
+      "pluginName": "Generic database",
+      "sshTunnelHost": "",
+      "attributes": {
+        "SUPPORTS_TIMESTAMP_DATA_TYPE": "N",
+        "QUOTE_ALL_FIELDS": "N",
+        "SUPPORTS_BOOLEAN_DATA_TYPE": "N",
+        "FORCE_IDENTIFIERS_TO_LOWERCASE": "N",
+        "PRESERVE_RESERVED_WORD_CASE": "Y",
+        "SQL_CONNECT": "",
+        "FORCE_IDENTIFIERS_TO_UPPERCASE": "N",
+        "PREFERRED_SCHEMA_NAME": "",
+        "CUSTOM_DRIVER_CLASS": "com.simba.googlebigquery.jdbc42.Driver"
+      },
+      "manualUrl": "jdbc:bigquery://https://www.googleapis.com/bigquery/v2:443;ProjectId=${GCP_PROJECT_ID};OAuthType=0;OAuthServiceAcctEmail=${GCP_SA_EMAIL};OAuthPvtKeyPath=${GCP_KEYFILE};Timeout=3600;EnableSession=1;Location=${BQ_LOCATION};EnableWriteAPI=1;SWA_ActivationRowCount=1;SWA_AppendRowCount=1000;",
+      "sshTunnelPassphrase": "Encrypted ",
+      "sshTunnelPassword": "Encrypted ",
+      "sshTunnelPrivateKeyFile": "",
+      "username": ""
+    }
+  },
+  "name": "BQ_generic"
+}

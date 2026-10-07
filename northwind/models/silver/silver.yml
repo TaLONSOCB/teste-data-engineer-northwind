@@ -1,0 +1,161 @@
+version: 2
+
+models:
+  - name: stg_customers
+    description: >
+      Clientes limpos e padronizados. Um registro por cliente. Textos sem
+      espacos nas pontas; campos opcionais nao informados ficam NULL.
+    columns:
+      - name: id_cliente
+        description: Identificador do cliente (codigo de 5 letras, em maiusculas).
+        data_tests:
+          - not_null
+          - unique
+      - name: nome_empresa
+        description: Razao social / nome da empresa cliente.
+        data_tests:
+          - not_null
+      - name: nome_contato
+        description: Nome da pessoa de contato no cliente.
+      - name: cargo_contato
+        description: Cargo da pessoa de contato.
+      - name: endereco
+        description: Endereco (logradouro) do cliente.
+      - name: cidade
+        description: Cidade do cliente.
+      - name: regiao
+        description: Estado, provincia ou regiao. NULL em 60 clientes (campo opcional na origem; varios paises nao usam essa divisao).
+      - name: cep
+        description: Codigo postal. NULL em 1 cliente (Irlanda, que nao tinha codigo postal a epoca).
+      - name: pais
+        description: Pais do cliente.
+        data_tests:
+          - not_null
+      - name: telefone
+        description: Telefone do cliente, no formato original.
+      - name: fax
+        description: Fax do cliente. NULL em 22 clientes (campo opcional).
+
+  - name: stg_orders
+    description: >
+      Cabecalho dos pedidos, com datas tipadas como DATE e frete como NUMERIC.
+      Um registro por pedido.
+    columns:
+      - name: id_pedido
+        description: Identificador do pedido.
+        data_tests:
+          - not_null
+          - unique
+      - name: id_cliente
+        description: Cliente que fez o pedido.
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('stg_customers')
+              field: id_cliente
+      - name: id_funcionario
+        description: Funcionario responsavel pelo pedido (tabela employees fora do escopo do teste).
+      - name: data_pedido
+        description: Data em que o pedido foi feito.
+        data_tests:
+          - not_null
+      - name: data_prazo_entrega
+        description: Data limite combinada para a entrega.
+      - name: data_envio
+        description: Data em que o pedido foi enviado. NULL em 21 pedidos ainda nao enviados (os mais recentes da base).
+      - name: pedido_enviado
+        description: Verdadeiro quando o pedido ja tem data de envio.
+        data_tests:
+          - not_null
+      - name: id_transportadora
+        description: Transportadora usada no envio (tabela shippers fora do escopo do teste).
+      - name: valor_frete
+        description: Valor do frete do pedido, com 2 casas decimais.
+        data_tests:
+          - nao_negativo
+      - name: nome_destinatario
+        description: Nome do destinatario da entrega.
+      - name: endereco_entrega
+        description: Endereco de entrega.
+      - name: cidade_entrega
+        description: Cidade de entrega.
+      - name: regiao_entrega
+        description: Estado, provincia ou regiao de entrega. NULL em 507 pedidos (campo opcional).
+      - name: cep_entrega
+        description: Codigo postal de entrega. NULL em 19 pedidos.
+      - name: pais_entrega
+        description: Pais de entrega.
+
+  - name: stg_order_details
+    description: >
+      Itens dos pedidos, com preco e desconto convertidos de ponto flutuante
+      para NUMERIC. Um registro por produto dentro de cada pedido.
+    data_tests:
+      - chave_composta_unica:
+          colunas: ['id_pedido', 'id_produto']
+    columns:
+      - name: id_pedido
+        description: Pedido ao qual o item pertence.
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('stg_orders')
+              field: id_pedido
+      - name: id_produto
+        description: Produto vendido no item.
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('stg_products')
+              field: id_produto
+      - name: preco_unitario
+        description: Preco unitario praticado na venda (pode diferir do preco de tabela atual do produto).
+        data_tests:
+          - not_null
+          - nao_negativo
+      - name: quantidade
+        description: Quantidade vendida do produto no pedido.
+        data_tests:
+          - not_null
+          - nao_negativo
+      - name: percentual_desconto
+        description: Desconto aplicado ao item, como fracao entre 0 e 1 (0.15 = 15%).
+        data_tests:
+          - not_null
+          - entre_zero_e_um
+
+  - name: stg_products
+    description: >
+      Produtos limpos, com o indicador de descontinuado como BOOL e o preco
+      de tabela como NUMERIC. Um registro por produto.
+    columns:
+      - name: id_produto
+        description: Identificador do produto.
+        data_tests:
+          - not_null
+          - unique
+      - name: nome_produto
+        description: Nome do produto.
+        data_tests:
+          - not_null
+          - unique
+      - name: id_fornecedor
+        description: Fornecedor do produto (tabela suppliers fora do escopo do teste).
+      - name: id_categoria
+        description: Categoria do produto (tabela categories fora do escopo do teste).
+      - name: quantidade_por_unidade
+        description: Descricao da embalagem (texto livre, ex. "24 - 12 oz bottles").
+      - name: preco_tabela
+        description: Preco de tabela atual do produto.
+        data_tests:
+          - nao_negativo
+      - name: unidades_em_estoque
+        description: Quantidade em estoque.
+      - name: unidades_encomendadas
+        description: Quantidade ja encomendada ao fornecedor.
+      - name: nivel_reposicao
+        description: Nivel de estoque que dispara a reposicao.
+      - name: descontinuado
+        description: Verdadeiro quando o produto foi descontinuado (10 dos 77 produtos).
+        data_tests:
+          - not_null

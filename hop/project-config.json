@@ -1,0 +1,26 @@
+{
+  "metadataBaseFolder" : "${PROJECT_HOME}/metadata",
+  "unitTestsBasePath" : "${PROJECT_HOME}",
+  "dataSetsCsvFolder" : "${PROJECT_HOME}/datasets",
+  "enforcingExecutionInHome" : true,
+  "parentProjectName" : "default",
+  "config" : {
+    "variables" : [ {
+      "name" : "GCP_PROJECT_ID",
+      "value" : "rruda-data-test",
+      "description" : "ID do projeto no Google Cloud"
+    }, {
+      "name" : "GCP_SA_EMAIL",
+      "value" : "hop-service-account@rruda-data-test.iam.gserviceaccount.com",
+      "description" : "E-mail da conta de servico usada na carga"
+    }, {
+      "name" : "BQ_DATASET",
+      "value" : "northwind_arruda",
+      "description" : "Conjunto de dados de destino no BigQuery"
+    }, {
+      "name" : "BQ_LOCATION",
+      "value" : "southamerica-east1",
+      "description" : "Regiao do conjunto de dados"
+    } ]
+  }
+}

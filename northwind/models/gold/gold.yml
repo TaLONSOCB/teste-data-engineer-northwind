@@ -1,0 +1,173 @@
+version: 2
+
+models:
+  - name: ft_vendas
+    description: >
+      Fato de vendas. Grao: um registro por item de pedido (um produto dentro
+      de um pedido). Relaciona-se com dm_cliente, dm_produto e dm_calendario
+      (pela data do pedido). O frete nao entra aqui por pertencer ao pedido.
+    columns:
+      - name: id_venda
+        description: Chave do item de venda, formada por id_pedido e id_produto (ex. "10248-11").
+        data_tests:
+          - not_null
+          - unique
+      - name: id_pedido
+        description: Pedido ao qual o item pertence (dimensao degenerada).
+        data_tests:
+          - not_null
+      - name: id_produto
+        description: Produto vendido. Chave para dm_produto.
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('dm_produto')
+              field: id_produto
+      - name: id_cliente
+        description: Cliente que comprou. Chave para dm_cliente.
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('dm_cliente')
+              field: id_cliente
+      - name: data_pedido
+        description: Data do pedido. Chave para dm_calendario.
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('dm_calendario')
+              field: data
+      - name: quantidade
+        description: Quantidade vendida do produto.
+        data_tests:
+          - not_null
+          - nao_negativo
+      - name: preco_unitario
+        description: Preco unitario praticado na venda.
+        data_tests:
+          - not_null
+          - nao_negativo
+      - name: percentual_desconto
+        description: Desconto aplicado ao item, como fracao entre 0 e 1.
+        data_tests:
+          - not_null
+          - entre_zero_e_um
+      - name: valor_bruto
+        description: Valor antes do desconto (preco_unitario x quantidade).
+        data_tests:
+          - not_null
+          - nao_negativo
+      - name: valor_desconto
+        description: Valor do desconto concedido (valor_bruto x percentual_desconto), arredondado a centavos.
+        data_tests:
+          - not_null
+          - nao_negativo
+      - name: valor_liquido
+        description: Valor efetivo da venda (valor_bruto - valor_desconto).
+        data_tests:
+          - not_null
+          - nao_negativo
+
+  - name: dm_cliente
+    description: >
+      Dimensao de clientes. Um registro por cliente, inclusive os que ainda nao
+      compraram. Atributos nao informados na origem aparecem como "Não informado".
+    columns:
+      - name: id_cliente
+        description: Chave do cliente (codigo de 5 letras da origem).
+        data_tests:
+          - not_null
+          - unique
+      - name: nome_empresa
+        description: Nome da empresa cliente.
+        data_tests:
+          - not_null
+      - name: nome_contato
+        description: Pessoa de contato no cliente.
+      - name: cargo_contato
+        description: Cargo da pessoa de contato.
+      - name: cidade
+        description: Cidade do cliente.
+      - name: regiao
+        description: Estado, provincia ou regiao do cliente ("Não informado" quando ausente na origem).
+        data_tests:
+          - not_null
+      - name: cep
+        description: Codigo postal do cliente ("Não informado" quando ausente na origem).
+      - name: pais
+        description: Pais do cliente.
+        data_tests:
+          - not_null
+
+  - name: dm_produto
+    description: Dimensao de produtos. Um registro por produto.
+    columns:
+      - name: id_produto
+        description: Chave do produto.
+        data_tests:
+          - not_null
+          - unique
+      - name: nome_produto
+        description: Nome do produto.
+        data_tests:
+          - not_null
+      - name: id_categoria
+        description: Codigo da categoria do produto (tabela de categorias fora do escopo do teste).
+      - name: id_fornecedor
+        description: Codigo do fornecedor do produto (tabela de fornecedores fora do escopo do teste).
+      - name: quantidade_por_unidade
+        description: Descricao da embalagem do produto.
+      - name: preco_tabela
+        description: Preco de tabela atual (o preco praticado em cada venda esta na ft_vendas).
+      - name: descontinuado
+        description: Verdadeiro quando o produto foi descontinuado.
+        data_tests:
+          - not_null
+      - name: situacao
+        description: Situacao do produto em texto.
+        data_tests:
+          - accepted_values:
+              values: ['Ativo', 'Descontinuado']
+
+  - name: dm_calendario
+    description: >
+      Dimensao de calendario gerada no dbt. Um registro por dia, cobrindo os
+      anos completos entre o primeiro e o ultimo pedido.
+    columns:
+      - name: data
+        description: Dia do calendario. Chave da dimensao.
+        data_tests:
+          - not_null
+          - unique
+      - name: ano
+        description: Ano (ex. 1997).
+        data_tests:
+          - not_null
+      - name: trimestre
+        description: Trimestre do ano, de 1 a 4.
+        data_tests:
+          - accepted_values:
+              values: [1, 2, 3, 4]
+              quote: false
+      - name: mes
+        description: Numero do mes, de 1 a 12.
+        data_tests:
+          - not_null
+      - name: nome_mes
+        description: Nome do mes em portugues.
+        data_tests:
+          - not_null
+      - name: dia_semana
+        description: Numero do dia da semana, de 1 (domingo) a 7 (sabado).
+        data_tests:
+          - accepted_values:
+              values: [1, 2, 3, 4, 5, 6, 7]
+              quote: false
+      - name: nome_dia_semana
+        description: Nome do dia da semana em portugues.
+        data_tests:
+          - not_null
+      - name: fim_de_semana
+        description: Verdadeiro para sabado e domingo.
+        data_tests:
+          - not_null
