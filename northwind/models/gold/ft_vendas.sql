@@ -1,12 +1,12 @@
--- Gold: fato de vendas.
--- Grao: um registro por item de pedido (produto dentro de um pedido).
--- Chaves: cliente, produto e data do pedido (liga na dm_calendario).
--- Metricas:
+-- Fato de vendas.
+-- Grão: um registro por item de pedido (um produto dentro de um pedido).
+-- Chaves: cliente, produto e data do pedido (que liga na dm_calendario).
+-- Métricas:
 --   valor_bruto    = preco_unitario * quantidade
---   valor_desconto = valor_bruto * percentual_desconto (arredondado a centavos)
+--   valor_desconto = valor_bruto * percentual_desconto (arredondado em centavos)
 --   valor_liquido  = valor_bruto - valor_desconto
--- O frete fica fora da fato porque pertence ao pedido, nao ao item: traze-lo
--- para este grao duplicaria o valor a cada item.
+-- Não trouxe o frete para cá porque ele é do pedido e não do item. Nesse
+-- grão ele ia se repetir em cada item e a soma ficaria errada.
 with itens as (
 
     select * from {{ ref('stg_order_details') }}

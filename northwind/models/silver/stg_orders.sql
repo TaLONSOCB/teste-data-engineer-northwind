@@ -1,8 +1,8 @@
--- Silver: cabecalho dos pedidos.
--- Tipagem: as datas chegam como DATETIME na Bronze (sempre 00:00:00) e sao
--- convertidas para DATE; o frete vira NUMERIC com 2 casas (valor monetario).
--- Pedidos ainda nao enviados mantem data_envio NULL; o indicador
--- pedido_enviado torna essa situacao explicita em vez de mascarar o NULL.
+-- Silver do cabeçalho dos pedidos.
+-- As datas chegam como DATETIME na Bronze (sempre com hora 00:00:00), então
+-- converti para DATE. O frete eu converti para NUMERIC com 2 casas.
+-- Os pedidos que ainda não foram enviados ficam com data_envio nula, e criei
+-- a coluna pedido_enviado para deixar isso claro em vez de esconder o nulo.
 with origem as (
 
     select * from {{ source('bronze', 'raw_orders') }}

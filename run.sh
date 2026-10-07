@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# Orquestracao do pipeline: ingestao -> testes -> transformacao -> documentacao.
+# Roda o pipeline inteiro: ingestão -> testes -> transformação -> documentação.
 #
-# Variaveis de ambiente necessarias:
-#   HOP_HOME     pasta de instalacao do Apache Hop (onde esta o hop-run.sh)
-#   DBT_KEYFILE  caminho do arquivo JSON da conta de servico do Google Cloud
+# Variáveis de ambiente que precisam estar definidas:
+#   HOP_HOME     pasta de instalação do Apache Hop (onde está o hop-run.sh)
+#   DBT_KEYFILE  caminho do arquivo JSON da conta de serviço do Google Cloud
 #
 # Uso:  ./run.sh
 set -euo pipefail
@@ -16,7 +16,7 @@ PROJETO_HOP="northwind_bronze"
 [ -f "$DBT_KEYFILE" ] || { echo "Chave nao encontrada: $DBT_KEYFILE"; exit 1; }
 
 export PYTHONWARNINGS="ignore"
-# O Hop recebe o caminho da chave como propriedade de sistema (variavel GCP_KEYFILE).
+# O Hop recebe o caminho da chave como propriedade de sistema (variável GCP_KEYFILE).
 export HOP_OPTIONS="${HOP_OPTIONS:-} -DGCP_KEYFILE=${DBT_KEYFILE}"
 
 etapa() { echo; echo "==== $1 ===="; }
@@ -25,7 +25,7 @@ etapa "0/5 Preparacao: tabelas raw_ e registro do projeto Hop"
 ( cd "$RAIZ/northwind" && dbt run-operation criar_tabelas_bronze )
 "$HOP_HOME/hop-conf.sh" --project="$PROJETO_HOP" --project-create \
     --project-home="$RAIZ/hop" --project-config-file="project-config.json" \
-    >/dev/null 2>&1 || true   # ja registrado em execucoes anteriores
+    >/dev/null 2>&1 || true   # já estava registrado de uma execução anterior
 
 etapa "1/5 Ingestao (Bronze) - Apache Hop"
 "$HOP_HOME/hop-run.sh" --project="$PROJETO_HOP" \

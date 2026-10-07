@@ -4,15 +4,15 @@ models:
   - name: stg_customers
     description: >
       Clientes limpos e padronizados. Um registro por cliente. Textos sem
-      espacos nas pontas; campos opcionais nao informados ficam NULL.
+      espaços nas pontas; campos opcionais não informados ficam NULL.
     columns:
       - name: id_cliente
-        description: Identificador do cliente (codigo de 5 letras, em maiusculas).
+        description: Identificador do cliente (código de 5 letras, em maiúsculas).
         data_tests:
           - not_null
           - unique
       - name: nome_empresa
-        description: Razao social / nome da empresa cliente.
+        description: Razão social / nome da empresa cliente.
         data_tests:
           - not_null
       - name: nome_contato
@@ -20,15 +20,15 @@ models:
       - name: cargo_contato
         description: Cargo da pessoa de contato.
       - name: endereco
-        description: Endereco (logradouro) do cliente.
+        description: Endereço (logradouro) do cliente.
       - name: cidade
         description: Cidade do cliente.
       - name: regiao
-        description: Estado, provincia ou regiao. NULL em 60 clientes (campo opcional na origem; varios paises nao usam essa divisao).
+        description: Estado, província ou região. NULL em 60 clientes (campo opcional na origem; vários países não usam essa divisão).
       - name: cep
-        description: Codigo postal. NULL em 1 cliente (Irlanda, que nao tinha codigo postal a epoca).
+        description: Código postal. NULL em 1 cliente.
       - name: pais
-        description: Pais do cliente.
+        description: País do cliente.
         data_tests:
           - not_null
       - name: telefone
@@ -38,7 +38,7 @@ models:
 
   - name: stg_orders
     description: >
-      Cabecalho dos pedidos, com datas tipadas como DATE e frete como NUMERIC.
+      Cabeçalho dos pedidos, com datas tipadas como DATE e frete como NUMERIC.
       Um registro por pedido.
     columns:
       - name: id_pedido
@@ -54,7 +54,7 @@ models:
               to: ref('stg_customers')
               field: id_cliente
       - name: id_funcionario
-        description: Funcionario responsavel pelo pedido (tabela employees fora do escopo do teste).
+        description: Funcionário responsável pelo pedido (tabela employees fora do escopo do teste).
       - name: data_pedido
         description: Data em que o pedido foi feito.
         data_tests:
@@ -62,9 +62,9 @@ models:
       - name: data_prazo_entrega
         description: Data limite combinada para a entrega.
       - name: data_envio
-        description: Data em que o pedido foi enviado. NULL em 21 pedidos ainda nao enviados (os mais recentes da base).
+        description: Data em que o pedido foi enviado. NULL em 21 pedidos ainda não enviados (os mais recentes da base).
       - name: pedido_enviado
-        description: Verdadeiro quando o pedido ja tem data de envio.
+        description: Verdadeiro quando o pedido já tem data de envio.
         data_tests:
           - not_null
       - name: id_transportadora
@@ -74,21 +74,21 @@ models:
         data_tests:
           - nao_negativo
       - name: nome_destinatario
-        description: Nome do destinatario da entrega.
+        description: Nome do destinatário da entrega.
       - name: endereco_entrega
-        description: Endereco de entrega.
+        description: Endereço de entrega.
       - name: cidade_entrega
         description: Cidade de entrega.
       - name: regiao_entrega
-        description: Estado, provincia ou regiao de entrega. NULL em 507 pedidos (campo opcional).
+        description: Estado, província ou região de entrega. NULL em 507 pedidos (campo opcional).
       - name: cep_entrega
-        description: Codigo postal de entrega. NULL em 19 pedidos.
+        description: Código postal de entrega. NULL em 19 pedidos.
       - name: pais_entrega
-        description: Pais de entrega.
+        description: País de entrega.
 
   - name: stg_order_details
     description: >
-      Itens dos pedidos, com preco e desconto convertidos de ponto flutuante
+      Itens dos pedidos, com preço e desconto convertidos de ponto flutuante
       para NUMERIC. Um registro por produto dentro de cada pedido.
     data_tests:
       - chave_composta_unica:
@@ -109,7 +109,7 @@ models:
               to: ref('stg_products')
               field: id_produto
       - name: preco_unitario
-        description: Preco unitario praticado na venda (pode diferir do preco de tabela atual do produto).
+        description: Preço unitário praticado na venda (pode diferir do preço de tabela atual do produto).
         data_tests:
           - not_null
           - nao_negativo
@@ -119,14 +119,14 @@ models:
           - not_null
           - nao_negativo
       - name: percentual_desconto
-        description: Desconto aplicado ao item, como fracao entre 0 e 1 (0.15 = 15%).
+        description: Desconto aplicado ao item, como fração entre 0 e 1 (0.15 = 15%).
         data_tests:
           - not_null
           - entre_zero_e_um
 
   - name: stg_products
     description: >
-      Produtos limpos, com o indicador de descontinuado como BOOL e o preco
+      Produtos limpos, com o indicador de descontinuado como BOOL e o preço
       de tabela como NUMERIC. Um registro por produto.
     columns:
       - name: id_produto
@@ -144,17 +144,17 @@ models:
       - name: id_categoria
         description: Categoria do produto (tabela categories fora do escopo do teste).
       - name: quantidade_por_unidade
-        description: Descricao da embalagem (texto livre, ex. "24 - 12 oz bottles").
+        description: Descrição da embalagem (texto livre, ex. "24 - 12 oz bottles").
       - name: preco_tabela
-        description: Preco de tabela atual do produto.
+        description: Preço de tabela atual do produto.
         data_tests:
           - nao_negativo
       - name: unidades_em_estoque
         description: Quantidade em estoque.
       - name: unidades_encomendadas
-        description: Quantidade ja encomendada ao fornecedor.
+        description: Quantidade já encomendada ao fornecedor.
       - name: nivel_reposicao
-        description: Nivel de estoque que dispara a reposicao.
+        description: Nível de estoque que dispara a reposição.
       - name: descontinuado
         description: Verdadeiro quando o produto foi descontinuado (10 dos 77 produtos).
         data_tests:

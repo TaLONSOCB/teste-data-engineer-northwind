@@ -1,6 +1,6 @@
--- DDL das tabelas da camada Bronze (referencia).
--- Na pratica elas sao criadas por:  dbt run-operation criar_tabelas_bronze
--- Ajuste projeto e conjunto de dados se nao usar os valores padrao.
+-- DDL das tabelas da Bronze (deixei aqui como referência).
+-- Na prática elas são criadas com:  dbt run-operation criar_tabelas_bronze
+-- Se for usar outro projeto ou conjunto de dados, precisa trocar os nomes abaixo.
 
 create table if not exists `rruda-data-test.northwind_arruda.raw_customers` (
   customer_id string, company_name string, contact_name string,

@@ -1,5 +1,5 @@
--- Teste generico customizado: falha se a coluna sair do intervalo [0, 1].
--- Usado para percentuais expressos como fracao.
+-- Teste genérico que eu criei: falha se a coluna sair do intervalo de 0 a 1.
+-- Uso no percentual de desconto, que vem como fração.
 {% test entre_zero_e_um(model, column_name) %}
 
 select {{ column_name }}

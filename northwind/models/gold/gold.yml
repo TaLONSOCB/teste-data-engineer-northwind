@@ -3,9 +3,9 @@ version: 2
 models:
   - name: ft_vendas
     description: >
-      Fato de vendas. Grao: um registro por item de pedido (um produto dentro
+      Fato de vendas. Grão: um registro por item de pedido (um produto dentro
       de um pedido). Relaciona-se com dm_cliente, dm_produto e dm_calendario
-      (pela data do pedido). O frete nao entra aqui por pertencer ao pedido.
+      (pela data do pedido). O frete não entra aqui por pertencer ao pedido.
     columns:
       - name: id_venda
         description: Chave do item de venda, formada por id_pedido e id_produto (ex. "10248-11").
@@ -13,7 +13,7 @@ models:
           - not_null
           - unique
       - name: id_pedido
-        description: Pedido ao qual o item pertence (dimensao degenerada).
+        description: Pedido ao qual o item pertence (dimensão degenerada).
         data_tests:
           - not_null
       - name: id_produto
@@ -43,12 +43,12 @@ models:
           - not_null
           - nao_negativo
       - name: preco_unitario
-        description: Preco unitario praticado na venda.
+        description: Preço unitário praticado na venda.
         data_tests:
           - not_null
           - nao_negativo
       - name: percentual_desconto
-        description: Desconto aplicado ao item, como fracao entre 0 e 1.
+        description: Desconto aplicado ao item, como fração entre 0 e 1.
         data_tests:
           - not_null
           - entre_zero_e_um
@@ -70,11 +70,11 @@ models:
 
   - name: dm_cliente
     description: >
-      Dimensao de clientes. Um registro por cliente, inclusive os que ainda nao
-      compraram. Atributos nao informados na origem aparecem como "Não informado".
+      Dimensão de clientes. Um registro por cliente, inclusive os que ainda não
+      compraram. Atributos não informados na origem aparecem como "Não informado".
     columns:
       - name: id_cliente
-        description: Chave do cliente (codigo de 5 letras da origem).
+        description: Chave do cliente (código de 5 letras da origem).
         data_tests:
           - not_null
           - unique
@@ -89,18 +89,18 @@ models:
       - name: cidade
         description: Cidade do cliente.
       - name: regiao
-        description: Estado, provincia ou regiao do cliente ("Não informado" quando ausente na origem).
+        description: Estado, província ou região do cliente ("Não informado" quando ausente na origem).
         data_tests:
           - not_null
       - name: cep
-        description: Codigo postal do cliente ("Não informado" quando ausente na origem).
+        description: Código postal do cliente ("Não informado" quando ausente na origem).
       - name: pais
-        description: Pais do cliente.
+        description: País do cliente.
         data_tests:
           - not_null
 
   - name: dm_produto
-    description: Dimensao de produtos. Um registro por produto.
+    description: Dimensão de produtos. Um registro por produto.
     columns:
       - name: id_produto
         description: Chave do produto.
@@ -112,30 +112,30 @@ models:
         data_tests:
           - not_null
       - name: id_categoria
-        description: Codigo da categoria do produto (tabela de categorias fora do escopo do teste).
+        description: Código da categoria do produto (tabela de categorias fora do escopo do teste).
       - name: id_fornecedor
-        description: Codigo do fornecedor do produto (tabela de fornecedores fora do escopo do teste).
+        description: Código do fornecedor do produto (tabela de fornecedores fora do escopo do teste).
       - name: quantidade_por_unidade
-        description: Descricao da embalagem do produto.
+        description: Descrição da embalagem do produto.
       - name: preco_tabela
-        description: Preco de tabela atual (o preco praticado em cada venda esta na ft_vendas).
+        description: Preço de tabela atual (o preço praticado em cada venda está na ft_vendas).
       - name: descontinuado
         description: Verdadeiro quando o produto foi descontinuado.
         data_tests:
           - not_null
       - name: situacao
-        description: Situacao do produto em texto.
+        description: Situação do produto em texto.
         data_tests:
           - accepted_values:
               values: ['Ativo', 'Descontinuado']
 
   - name: dm_calendario
     description: >
-      Dimensao de calendario gerada no dbt. Um registro por dia, cobrindo os
-      anos completos entre o primeiro e o ultimo pedido.
+      Dimensão de calendário gerada no dbt. Um registro por dia, cobrindo os
+      anos completos entre o primeiro e o último pedido.
     columns:
       - name: data
-        description: Dia do calendario. Chave da dimensao.
+        description: Dia do calendário. Chave da dimensão.
         data_tests:
           - not_null
           - unique
@@ -150,24 +150,24 @@ models:
               values: [1, 2, 3, 4]
               quote: false
       - name: mes
-        description: Numero do mes, de 1 a 12.
+        description: Número do mês, de 1 a 12.
         data_tests:
           - not_null
       - name: nome_mes
-        description: Nome do mes em portugues.
+        description: Nome do mês em português.
         data_tests:
           - not_null
       - name: dia_semana
-        description: Numero do dia da semana, de 1 (domingo) a 7 (sabado).
+        description: Número do dia da semana, de 1 (domingo) a 7 (sábado).
         data_tests:
           - accepted_values:
               values: [1, 2, 3, 4, 5, 6, 7]
               quote: false
       - name: nome_dia_semana
-        description: Nome do dia da semana em portugues.
+        description: Nome do dia da semana em português.
         data_tests:
           - not_null
       - name: fim_de_semana
-        description: Verdadeiro para sabado e domingo.
+        description: Verdadeiro para sábado e domingo.
         data_tests:
           - not_null

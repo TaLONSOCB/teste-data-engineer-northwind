@@ -1,7 +1,7 @@
--- Silver: clientes.
--- Limpeza: remove espacos nas pontas e converte texto vazio em NULL.
--- Campos opcionais (regiao, cep, fax) permanecem NULL quando nao informados:
--- a Silver nao inventa valores; o rotulo "Nao informado" e aplicado na Gold.
+-- Silver de clientes.
+-- Tirei os espaços das pontas dos textos e transformei texto vazio em nulo.
+-- Os campos opcionais (região, cep, fax) continuam nulos quando não foram
+-- preenchidos na origem. O "Não informado" eu só coloco na Gold.
 with origem as (
 
     select * from {{ source('bronze', 'raw_customers') }}

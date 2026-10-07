@@ -1,5 +1,5 @@
--- Teste singular: a dm_calendario deve ter exatamente um registro por dia,
--- sem buracos, entre a menor e a maior data.
+-- A dm_calendario tem que ter exatamente um registro por dia,
+-- sem dia faltando entre a menor e a maior data.
 with resumo as (
 
     select

@@ -1,13 +1,13 @@
 {#
-  Cria o conjunto de dados e as tabelas raw_ da camada Bronze, caso ainda nao
-  existam. O Apache Hop grava nessas tabelas, mas nao as cria: o Table output
-  do Hop nao gera DDL para o BigQuery. Uso:
+  Cria o conjunto de dados e as tabelas raw_ da Bronze, se ainda não existirem.
+  Precisei disso porque o Hop grava nessas tabelas mas não cria elas (o Table
+  output não gera o DDL para o BigQuery). Para rodar:
 
       dbt run-operation criar_tabelas_bronze
 
-  As datas de raw_orders sao DATETIME porque a gravacao em lote do driver
-  (Storage Write API) nao aceita o formato enviado pelo Hop em colunas DATE.
-  A conversao para DATE acontece na Silver (stg_orders).
+  As datas da raw_orders estão como DATETIME porque a gravação em lote do driver
+  não aceita o formato que o Hop envia em coluna DATE. A conversão para DATE eu
+  faço na Silver (stg_orders).
 #}
 {% macro criar_tabelas_bronze() %}
 

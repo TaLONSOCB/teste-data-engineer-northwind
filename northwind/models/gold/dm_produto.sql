@@ -1,6 +1,6 @@
--- Gold: dimensao de produtos.
--- Um registro por produto. A situacao (Ativo/Descontinuado) e derivada do
--- indicador booleano para facilitar o uso em relatorios.
+-- Dimensão de produtos.
+-- Um registro por produto. Criei a coluna situacao (Ativo/Descontinuado)
+-- a partir do booleano, para ficar mais fácil de usar em relatório.
 select
     id_produto,
     nome_produto,

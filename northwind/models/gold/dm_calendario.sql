@@ -1,6 +1,6 @@
--- Gold: dimensao de calendario, gerada no dbt (nao existe na origem).
--- Um registro por dia, cobrindo os anos completos entre o primeiro e o
--- ultimo pedido, para que analises por ano/trimestre nao fiquem truncadas.
+-- Dimensão de calendário, gerada aqui no dbt porque não existe na origem.
+-- Um registro por dia. Peguei os anos completos entre o primeiro e o último
+-- pedido, para as análises por ano e por trimestre não ficarem cortadas.
 with limites as (
 
     select

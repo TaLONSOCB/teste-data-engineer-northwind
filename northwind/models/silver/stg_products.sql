@@ -1,6 +1,6 @@
--- Silver: produtos.
--- Tipagem: discontinued chega como inteiro 0/1 e vira BOOL;
--- o preco de tabela vira NUMERIC com 2 casas.
+-- Silver de produtos.
+-- O discontinued vem como inteiro (0 ou 1) e eu converti para booleano.
+-- O preço de tabela foi convertido para NUMERIC com 2 casas.
 with origem as (
 
     select * from {{ source('bronze', 'raw_products') }}

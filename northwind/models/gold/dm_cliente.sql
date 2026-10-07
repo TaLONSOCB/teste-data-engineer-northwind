@@ -1,7 +1,7 @@
--- Gold: dimensao de clientes.
--- Um registro por cliente, incluindo os que ainda nao compraram (2 na base).
--- Atributos descritivos nulos recebem o rotulo 'Nao informado' para que
--- filtros e agrupamentos nas ferramentas de analise nao escondam registros.
+-- Dimensão de clientes.
+-- Tem um registro por cliente, inclusive os 2 que nunca fizeram pedido.
+-- Troquei os nulos por 'Não informado' para esses clientes não sumirem
+-- quando alguém filtrar ou agrupar por esses campos em um relatório.
 select
     id_cliente,
     nome_empresa,

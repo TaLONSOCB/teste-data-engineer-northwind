@@ -1,5 +1,5 @@
--- Teste singular: coerencia das metricas da fato.
--- valor_liquido = valor_bruto - valor_desconto, e o desconto nunca supera o bruto.
+-- Confere a conta das métricas da fato:
+-- valor_liquido = valor_bruto - valor_desconto, e o desconto nunca passa do bruto.
 select
     id_venda,
     valor_bruto,

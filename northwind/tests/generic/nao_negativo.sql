@@ -1,4 +1,4 @@
--- Teste generico customizado: falha se a coluna tiver valor negativo.
+-- Teste genérico que eu criei: falha se a coluna tiver valor negativo.
 {% test nao_negativo(model, column_name) %}
 
 select {{ column_name }}

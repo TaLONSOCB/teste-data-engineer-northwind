@@ -3,9 +3,9 @@ version: 2
 sources:
   - name: bronze
     description: >
-      Camada Bronze. Copia fiel das tabelas do Northwind (PostgreSQL), carregada
-      pelo Apache Hop sem regra de negocio. Os testes abaixo validam a ingestao
-      antes de qualquer transformacao.
+      Camada Bronze. Cópia fiel das tabelas do Northwind (PostgreSQL), carregada
+      pelo Apache Hop sem regra de negócio. Os testes abaixo validam a ingestão
+      antes de qualquer transformação.
     database: rruda-data-test
     schema: northwind_arruda
     tables:
@@ -20,8 +20,8 @@ sources:
 
       - name: raw_orders
         description: >
-          Cabecalho dos pedidos, como na origem. As datas chegam como DATETIME
-          (limitacao da gravacao em lote do driver) e viram DATE na Silver.
+          Cabeçalho dos pedidos, como na origem. As datas chegam como DATETIME
+          (limitação da gravação em lote do driver) e viram DATE na Silver.
         columns:
           - name: order_id
             description: Identificador do pedido na origem.

@@ -1,6 +1,6 @@
--- Teste singular: a fato nao pode perder nem duplicar itens em relacao a Bronze.
--- Compara a quantidade de linhas e o valor bruto total da ft_vendas com o que
--- foi ingerido em raw_order_details. Retorna linha (falha) se houver diferenca.
+-- A fato não pode perder nem duplicar item em relação à Bronze.
+-- Comparo a quantidade de linhas e o valor bruto total da ft_vendas com o que
+-- foi carregado na raw_order_details. Se der diferença o teste falha.
 with fato as (
 
     select

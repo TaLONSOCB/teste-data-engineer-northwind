@@ -1,7 +1,7 @@
--- Silver: itens dos pedidos.
--- Tipagem: preco e desconto vem do tipo REAL do PostgreSQL (ponto flutuante).
--- Sao convertidos para NUMERIC e arredondados para evitar erro de
--- arredondamento nos calculos de valor da camada Gold.
+-- Silver dos itens dos pedidos.
+-- O preço e o desconto vêm como REAL do PostgreSQL (ponto flutuante).
+-- Converti para NUMERIC e arredondei, para não dar diferença de centavos
+-- nos cálculos de valor que são feitos na Gold.
 with origem as (
 
     select * from {{ source('bronze', 'raw_order_details') }}

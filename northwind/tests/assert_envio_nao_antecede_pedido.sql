@@ -1,4 +1,4 @@
--- Teste singular: um pedido nao pode ter sido enviado antes de ter sido feito.
+-- Um pedido não pode ter sido enviado antes de ter sido feito.
 select
     id_pedido,
     data_pedido,

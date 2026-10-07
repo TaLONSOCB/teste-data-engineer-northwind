@@ -14,9 +14,9 @@ clean-targets:
   - "target"
   - "dbt_packages"
 
-# Arquitetura medalhao:
+# Arquitetura medalhão:
 #   bronze -> tabelas raw_ carregadas pelo Apache Hop (declaradas como sources)
-#   silver -> modelos stg_ (views): limpeza, tipagem e nomes de negocio
+#   silver -> modelos stg_ (views): limpeza, tipagem e nomes de negócio
 #   gold   -> modelos dm_/ft_ (tabelas): esquema dimensional de vendas
 models:
   northwind:
