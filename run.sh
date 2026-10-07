@@ -34,13 +34,15 @@ etapa "1/5 Ingestao (Bronze) - Apache Hop"
 cd "$RAIZ/northwind"
 
 etapa "2/5 Testes da ingestao (fontes Bronze) - dbt"
-dbt test --select "source:*"
+# cautious: só os testes que dependem apenas das fontes (os que também usam
+# modelos da Gold rodam na etapa 4, depois que os modelos existem)
+dbt test --select "source:*" --indirect-selection cautious
 
 etapa "3/5 Transformacao (Silver e Gold) - dbt"
 dbt run
 
 etapa "4/5 Testes das camadas Silver e Gold - dbt"
-dbt test --exclude "source:*"
+dbt test --select "path:models/silver" "path:models/gold"
 
 etapa "5/5 Documentacao - dbt"
 dbt docs generate
