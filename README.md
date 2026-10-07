@@ -87,7 +87,7 @@ Na primeira execução em um ambiente novo pode aparecer um erro `NOT_FOUND` na 
 * Renomeei as colunas para nomes de negócio em português (`id_cliente`, `data_pedido`, `valor_frete` e assim por diante).
 * Tirei os espaços das pontas dos textos e transformei texto vazio em nulo.
 * Na Silver eu não invento valor. Se o campo não foi preenchido na origem, ele continua nulo.
-* Os valores de preço, desconto e frete vêm como float do PostgreSQL. Converti para `NUMERIC` e arredondei, para as somas da Gold não darem diferença de centavos.
+* Os valores de preço, desconto e frete vêm como `FLOAT` do PostgreSQL. Converti para `NUMERIC` e arredondei, para as somas da Gold não darem diferença de centavos.
 
 ### Camada Gold (dbt)
 * A `ft_vendas` está no grão de item do pedido (um produto dentro de um pedido), com as chaves de cliente, produto e data do pedido.
