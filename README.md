@@ -117,7 +117,7 @@ Antes de modelar eu rodei uma consulta de perfil em cima das tabelas da Bronze p
 * Também vi que 37 pedidos foram enviados depois do prazo combinado. Isso eu não tratei, porque não é erro no dado, é o que aconteceu de fato.
 
 ## Testes e documentação
-* No total são 86 testes e todos passam.
+* No total são 96 testes e todos passam.
 
 ![Resultado do dbt build](docs/img/dbt-build.png)
 
