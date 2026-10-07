@@ -1,0 +1,48 @@
+# Origem do pipeline: PostgreSQL com a base Northwind.
+#
+#   docker-compose up -d      sobe o banco em localhost:55432
+#   docker-compose down -v    apaga tudo (na próxima subida a base é recriada)
+#
+# A imagem está fixada em postgres:16 porque a mais recente (18) mudou o
+# diretório de dados e não sobe com o volume em /var/lib/postgresql/data.
+
+services:
+
+  # Baixa o script da base Northwind do repositório indicado no teste
+  # (fixado em um commit, para o resultado ser sempre o mesmo).
+  baixar-northwind:
+    image: curlimages/curl:8.10.1
+    user: "0"
+    command:
+      - "-fsSL"
+      - "-o"
+      - "/scripts/northwind.sql"
+      - "https://raw.githubusercontent.com/pthom/northwind_psql/cd0ef28d66369fbe177778e604e4be0f153c9e5c/northwind.sql"
+    volumes:
+      - northwind_scripts:/scripts
+
+  db:
+    image: postgres:16
+    container_name: northwind_origem
+    depends_on:
+      baixar-northwind:
+        condition: service_completed_successfully
+    environment:
+      POSTGRES_DB: northwind
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "55432:5432"
+    volumes:
+      # O Postgres executa os .sql desta pasta na primeira inicialização.
+      - northwind_scripts:/docker-entrypoint-initdb.d:ro
+      - northwind_dados:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d northwind"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+volumes:
+  northwind_scripts:
+  northwind_dados:

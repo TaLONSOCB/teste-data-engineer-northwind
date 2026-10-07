@@ -1,8 +1,8 @@
 # Teste Técnico Data Engineer - Arruda Data Consulting
-Essa é minha solução para o teste técnico de Data Engineer. A ideia é pegar a base Northwind que está em um PostgreSQL, levar para o BigQuery com o Apache Hop (camada Bronze) e depois tratar e modelar com o dbt (camadas Silver e Gold).
+Solução do teste técnico de Data Engineer. A base Northwind, que está em um PostgreSQL, é levada para o BigQuery com o Apache Hop (camada Bronze) e depois tratada e modelada com o dbt (camadas Silver e Gold).
 
 ### Programas utilizados:
-* [Docker](https://www.docker.com/get-started) para subir o PostgreSQL de origem
+* [Docker](https://www.docker.com/get-started) e docker-compose para subir o PostgreSQL de origem
 * [Apache Hop 2.19](https://hop.apache.org) para a ingestão
 * [Driver JDBC da Simba para o BigQuery](https://cloud.google.com/bigquery/docs/reference/odbc-jdbc-drivers)
 * [Google BigQuery](https://cloud.google.com/bigquery?hl=pt-br) como destino das três camadas
@@ -15,11 +15,12 @@ Essa é minha solução para o teste técnico de Data Engineer. A ideia é pegar
 PostgreSQL (Northwind)  --Apache Hop-->  BRONZE (raw_)  --dbt-->  SILVER (stg_)  --dbt-->  GOLD (ft_ e dm_)
 ```
 
-* `hop/` tem os pipelines do Hop (`bronze_main.hpl` e `bronze_load.hpl`) e as conexões
-* `northwind/` é o projeto dbt, com os modelos, os testes e as descrições
-* `sql/bronze_ddl.sql` tem o DDL das tabelas da Bronze
-* `run.sh` roda tudo em sequência
-* `docs/erros-e-solucoes.md` é onde eu anotei os erros que tive no caminho e como resolvi cada um
+* `docker-compose.yml`: sobe o PostgreSQL de origem já com a base Northwind carregada
+* `hop/`: pipelines do Hop (`bronze_main.hpl` e `bronze_load.hpl`) e conexões
+* `northwind/`: projeto dbt, com os modelos, os testes e as descrições
+* `sql/bronze_ddl.sql`: DDL das tabelas da Bronze
+* `run.sh`: execução de todas as etapas em sequência
+* `docs/erros-e-solucoes.md`: anotações dos erros encontrados e suas respectivas soluções
 
 Escolhi o BigQuery como destino porque é o banco com que eu mais trabalho no dia a dia. Deixei as três camadas no mesmo conjunto de dados (`northwind_arruda`), separadas pelo prefixo das tabelas, do jeito que o enunciado descreve.
 
@@ -27,20 +28,19 @@ Escolhi o BigQuery como destino porque é o banco com que eu mais trabalho no di
 
 ## Como executar
 
-* Primeiro é preciso subir a origem. Eu usei o repositório indicado no teste:
+* Subir a origem. O `docker-compose.yml` da raiz baixa o script da base Northwind do repositório indicado no teste e sobe um PostgreSQL 16 com ela carregada:
 ```bash
-git clone https://github.com/pthom/northwind_psql.git
-cd northwind_psql && docker-compose up -d
+docker-compose up -d
 ```
-O banco fica em `localhost:55432` (banco `northwind`, usuário e senha `postgres`). Aqui já vai um aviso: comigo o container `db` não subiu de primeira, porque o compose baixa a versão mais nova do PostgreSQL (18) e ela não é compatível com o volume que está configurado. Resolvi trocando para `image: postgres:16` no `docker-compose.yml`, rodando `docker-compose down -v` e subindo de novo.
+O banco fica em `localhost:55432` (banco `northwind`, usuário e senha `postgres`). A imagem está fixada em `postgres:16` porque o compose original usa a versão mais recente, e o PostgreSQL 18 não sobe com o volume que ele configura (está no arquivo de erros).
 
-* Depois é preciso colocar o driver do BigQuery no Hop, porque ele não vem junto. Baixei o driver da Simba e copiei para a pasta `lib/jdbc` do Hop somente estes arquivos do zip:
+* Instalar o driver do BigQuery no Hop, que não vem junto. Do zip do [driver da Simba](https://cloud.google.com/bigquery/docs/reference/odbc-jdbc-drivers), copiar para a pasta `lib/jdbc` do Hop somente estes arquivos:
 ```
 GoogleBigQueryJDBC42.jar  api-common-*.jar  gax-*.jar  json-*.jar  threetenbp-*.jar
 google-api-services-bigquery-v2-*.jar  google-cloud-bigquerystorage-*.jar
 grpc-google-cloud-bigquerystorage-*.jar  proto-google-cloud-bigquerystorage-*.jar
 ```
-Os arquivos `grpc-alts`, `grpc-api`, `grpc-core` e `grpc-netty-shaded` não podem ser copiados, porque dão conflito com as bibliotecas do próprio Hop.
+Os arquivos `grpc-alts`, `grpc-api`, `grpc-core` e `grpc-netty-shaded` não devem ser copiados, porque dão conflito com as bibliotecas do próprio Hop.
 
 * Instalar o dbt em um ambiente virtual:
 ```bash
@@ -48,20 +48,20 @@ python3 -m venv .venv && source .venv/bin/activate
 pip install "dbt-core>=1.9,<1.10" "dbt-bigquery>=1.9,<1.10"
 ```
 
-* Informar onde está o Hop e onde está a chave da conta de serviço do Google Cloud (a conta precisa ter o papel de Administrador do BigQuery):
+* Informar a pasta do Hop e a chave da conta de serviço do Google Cloud (a conta precisa do papel de Administrador do BigQuery):
 ```bash
 export HOP_HOME=/caminho/para/hop
 export DBT_KEYFILE=/caminho/para/chave-da-conta-de-servico.json
 ```
-O projeto, o conjunto de dados e a região estão no `northwind/profiles.yml` (dbt) e no `hop/project-config.json` (Hop). Quem for rodar em outro projeto do Google Cloud precisa trocar nesses dois arquivos. A chave não está no repositório, o caminho dela entra só pela variável de ambiente.
+O projeto, o conjunto de dados e a região estão no `northwind/profiles.yml` (dbt) e no `hop/project-config.json` (Hop). Para rodar em outro projeto do Google Cloud, é preciso trocar nesses dois arquivos. A chave não está no repositório: o caminho dela entra só pela variável de ambiente.
 
-* Com isso pronto, é só rodar:
+* Rodar o pipeline completo:
 ```bash
 ./run.sh
 ```
-O script faz, nessa ordem: cria as tabelas `raw_` se elas ainda não existirem, roda a ingestão do Hop, testa as tabelas da Bronze, roda os modelos do dbt, testa a Silver e a Gold e por último gera a documentação. Para abrir a documentação no navegador eu uso `cd northwind && dbt docs serve`.
+O script executa, nessa ordem: criação das tabelas `raw_` (se ainda não existirem), ingestão pelo Hop, testes das tabelas da Bronze, modelos do dbt, testes da Silver e da Gold e geração da documentação. Para abrir a documentação no navegador: `cd northwind && dbt docs serve`.
 
-Se for a primeira execução em um ambiente novo, pode aparecer um erro `NOT_FOUND` na ingestão, porque o BigQuery demora alguns minutos para liberar a gravação em uma tabela que acabou de ser criada. É só esperar um pouco e rodar de novo.
+Na primeira execução em um ambiente novo pode aparecer um erro `NOT_FOUND` na ingestão, porque o BigQuery demora alguns minutos para liberar a gravação em uma tabela recém-criada. Basta esperar um pouco e rodar de novo.
 
 ## Decisões tomadas
 
@@ -143,6 +143,6 @@ Eu costumo anotar os erros que aparecem enquanto estou desenvolvendo, até para 
 * Trocar a gravação por JDBC por carga de arquivo (extrair para Parquet e fazer um load no BigQuery), que é o mais indicado quando o volume é grande.
 * Separar cada camada em um conjunto de dados, com permissões diferentes.
 * Usar um orquestrador de verdade no lugar do `run.sh`, com agendamento, nova tentativa e alerta.
-* Colocar o Hop e o dbt em container também. Hoje só a origem sobe com docker-compose.
+* Colocar o Hop e o dbt em container também, para o ambiente inteiro subir com um comando. Hoje o docker-compose do projeto cobre só a origem.
 * Rodar os testes automaticamente a cada alteração no repositório.
 * Atualizar o Python e o dbt. Usei o dbt 1.9 porque era a versão estável compatível com o Python 3.9 da minha máquina.

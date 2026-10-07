@@ -37,6 +37,7 @@ Meu ambiente: MacBook (Apple Silicon), Docker Desktop, Apache Hop 2.19.0, driver
 * Subi o `docker-compose up -d` do repositório do Northwind e não consegui conectar no banco. Olhando o `docker-compose logs db` apareceu: `Error: in 18+, these Docker images are configured to store database data in a format which is compatible with "pg_ctlcluster"`.
 * O compose do repositório não fixa a versão da imagem, então ele baixou o PostgreSQL 18, que mudou o lugar onde guarda os dados e não funciona com o volume configurado (`/var/lib/postgresql/data`).
 * Resolvi colocando `image: postgres:16` no serviço `db`, apagando os volumes da tentativa anterior com `docker-compose down -v` e subindo de novo.
+* Por causa disso o projeto tem um `docker-compose.yml` próprio na raiz, já com a versão fixada, para ninguém mais passar por esse erro.
 
 **2. pgAdmin com `Database is uninitialized and superuser password is not specified`**
 
