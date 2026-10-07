@@ -90,9 +90,9 @@ Na primeira execução em um ambiente novo pode aparecer um erro `NOT_FOUND` na 
 * Os valores de preço, desconto e frete vêm como `FLOAT` do PostgreSQL. Converti para `NUMERIC` e arredondei, para as somas da Gold não darem diferença de centavos.
 
 ### Camada Gold (dbt)
-* A `ft_vendas` está no grão de item do pedido (um produto dentro de um pedido), com as chaves de cliente, produto e data do pedido.
+* A `ft_vendas` está na granularidade de item do pedido (um produto dentro de um pedido), com as chaves de cliente, produto e data do pedido.
 * As métricas são: valor bruto (preço x quantidade), valor do desconto (valor bruto x percentual de desconto) e valor líquido (valor bruto menos o desconto).
-* Não coloquei o frete na fato, porque o frete é do pedido inteiro e não do item. Se eu trouxesse para esse grão ele ia se repetir em cada item e a soma ficaria errada.
+* Não coloquei o frete na fato, porque o frete é do pedido inteiro e não do item. Se eu trouxesse para esse granularidade ele ia se repetir em cada item e a soma ficaria errada.
 * O preço que eu uso na fato é o que foi praticado na venda. O preço de tabela atual do produto fica na `dm_produto`. Conferi e em 662 dos 2.155 itens os dois são diferentes, o que é normal.
 * Nas dimensões eu troquei os valores nulos por "Não informado", para eles não sumirem quando alguém filtrar ou agrupar em um relatório.
 * Usei as chaves da própria origem nas dimensões. Como a base não guarda histórico de alteração, não vi necessidade de criar chave substituta nesse teste.
